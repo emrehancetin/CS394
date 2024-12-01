@@ -25,16 +25,29 @@
                 android:layout_marginTop="50dp"
                 android:text="Total Balance"
                 android:textAlignment="center"
+                android:textColor="@color/white"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
+                android:id="@+id/cashBalanceTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$1000.00"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="55sp" />
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:text="Cash: $1,000,000.00"
+                android:textSize="18sp"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/walletBalanceTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="Wallet: 0.000000 BTC"
+                android:textSize="18sp"
+                android:textColor="@color/white" />
+
 
 
             <androidx.recyclerview.widget.RecyclerView

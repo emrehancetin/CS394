@@ -1,50 +1,42 @@
 package com.emrehancetin.cs394.Fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.emrehancetin.cs394.Adapter.CryptoAdapter
-import com.emrehancetin.cs394.Model.CryptoModel
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.emrehancetin.cs394.R
-
+import com.emrehancetin.cs394.ViewModel.SharedViewModel
 
 class HomeFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
-    }
+    private lateinit var sharedViewModel: SharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cryptoList = listOf(
-            CryptoModel("Bitcoin", "BTC", 97309.25),
-            CryptoModel("Ethereum", "ETH", 3728.09),
-            CryptoModel("Cardano", "ADA", 1.07)
-        )
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = CryptoAdapter(cryptoList) { crypto ->
-            // Handle item click
-            println("Clicked on: ${crypto.name}")
+        val walletTextView: TextView = view.findViewById(R.id.walletBalanceTextView)
+        val cashTextView: TextView = view.findViewById(R.id.cashBalanceTextView)
+
+        // Observe BTC balance
+        sharedViewModel.btcBalance.observe(viewLifecycleOwner) { balance ->
+            walletTextView.text = "Wallet: ${String.format("%.6f BTC", balance)}"
+        }
+
+        // Observe Cash balance
+        sharedViewModel.cashBalance.observe(viewLifecycleOwner) { cash ->
+            cashTextView.text = "Cash: $${String.format("%.2f", cash)}"
         }
     }
-
-
 }

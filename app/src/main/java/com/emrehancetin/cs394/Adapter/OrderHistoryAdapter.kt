@@ -26,8 +26,13 @@ class OrderHistoryAdapter(
     override fun onBindViewHolder(holder: OrderHistoryViewHolder, position: Int) {
         val order = orderList[position]
         holder.dateTextView.text = order.date
-        holder.amountTextView.text = "$${order.amount}"
+        holder.amountTextView.text = "${order.amount}"
         holder.typeTextView.text = order.type
+        if (order.type == "Buy") {
+            holder.typeTextView.setTextColor(holder.itemView.resources.getColor(R.color.green))
+        } else {
+            holder.typeTextView.setTextColor(holder.itemView.resources.getColor(R.color.red))
+        }
     }
 
     override fun getItemCount(): Int {
