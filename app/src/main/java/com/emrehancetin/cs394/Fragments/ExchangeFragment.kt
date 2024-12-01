@@ -19,7 +19,7 @@ class ExchangeFragment : Fragment() {
 
     private val btcPrice: Double = 15100.0 // Example BTC price
     private lateinit var sharedViewModel: SharedViewModel
-    private var selectedOrderType: String = "Buy" // Default order type
+    private var selectedOrderType: String = "Unknown" // Default order type
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +37,18 @@ class ExchangeFragment : Fragment() {
         val totalEdtTxt: EditText = view.findViewById(R.id.totalEdtTxt)
         val sendOrderButton: Button = view.findViewById(R.id.sendOrderButton)
         val radioGroup: RadioGroup = view.findViewById(R.id.radioGroup)
+
+
+        val sendOrderButtonText :String = sendOrderButton.text.toString()
+        val sellRadioButton:RadioButton = view.findViewById(R.id.sellButton)
+        sellRadioButton.setOnClickListener{
+            Toast.makeText(requireContext(), "Sell seçildi", Toast.LENGTH_SHORT).show()
+            sendOrderButton.setText(sendOrderButtonText + " (SELL)")}
+        val buyRadioButton:RadioButton = view.findViewById(R.id.buyButton)
+        buyRadioButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Buy seçildi", Toast.LENGTH_SHORT).show()
+            sendOrderButton.setText(sendOrderButtonText + " (BUY)")}
+
 
         // Track radio button selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -80,7 +92,14 @@ class ExchangeFragment : Fragment() {
         val totalText = totalEdtTxt.text.toString()
         val total = if (totalText.isNotEmpty()) totalText.toDouble() else 0.0
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
+        if(selectedOrderType == "Unknown") {
+            Toast.makeText(requireContext(),"Tür Seçiniz",Toast.LENGTH_SHORT).show()
+            return
+        }
+        if(amount == 0.0) {
+            Toast.makeText(requireContext(),"Amount giriniz",Toast.LENGTH_SHORT).show()
+            return
+        }
         // Validate Sell Orders
         if (selectedOrderType == "Sell") {
             val walletBalance = sharedViewModel.btcBalance.value ?: 0.0
@@ -107,5 +126,6 @@ class ExchangeFragment : Fragment() {
             "Order sent successfully.",
             Toast.LENGTH_LONG
         ).show()
+        selectedOrderType = ""
     }
 }
