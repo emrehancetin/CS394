@@ -31,7 +31,8 @@
                     android:orientation="horizontal"
                     tools:layout_editor_absoluteY="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="MissingConstraints">
 
                     <ImageView
                         android:id="@+id/logoImg"
@@ -94,120 +95,96 @@
                     <RadioGroup
                         android:id="@+id/radioGroup"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
+                        android:layout_height="wrap_content">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            >
-                        <RadioButton
-                            android:id="@+id/buyButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="8dp"
-                            android:background="@drawable/green_bg"
-                            android:text="Buy"
-                            android:gravity="center"
-                            android:button="@null"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"/>
-                        <RadioButton
-                            android:id="@+id/sellButton"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/red_bg"
-                            android:text="Sell"
-                            android:gravity="center"
-                            android:button="@null"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/buyButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/green_bg"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Buy"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+
+                            <RadioButton
+                                android:id="@+id/sellButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/red_bg"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Sell"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </RadioGroup>
 
-                    <Spinner
-                        android:id="@+id/typeSpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@color/black3"/>
-
-                    <EditText
-                        android:id="@+id/priceEdtTxt"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:ems="10"
-                        android:hint="Price"
-                        android:textSize="24sp"
-                        android:textAlignment="center"
-                        android:inputType="text"
-                        android:layout_marginTop="8dp"
-                        android:background="@color/black3"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="8dp">
+                        android:layout_marginTop="15dp"
+                        android:text="BTC"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
 
-                        <ImageView
-                            android:id="@+id/imageView4"
-                            android:layout_width="28dp"
-                            android:layout_height="3dp"
-                            android:layout_weight="1"
-                            android:layout_marginTop="12dp"
-                            app:srcCompat="@drawable/minus" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="97309,25"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
 
-                        <EditText
-                            android:id="@+id/amountEdtTxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:background="#00ffffff"
-                            android:inputType="text"
-                            android:textSize="24sp"
-                            android:textColor="@color/white"
-                            android:textAlignment="center"
-                            android:hint="Amount"
-                            android:textColorHint="@color/white"/>
+                    <EditText
+                        android:id="@+id/amountEdtTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:background="#00ffffff"
+                        android:hint="Amount"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:textSize="24sp" />
 
-                        <ImageView
-                            android:id="@+id/imageView5"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_weight="1"
-
-                            app:srcCompat="@drawable/add" />
-                    </LinearLayout>
                     <EditText
                         android:id="@+id/totalEdtTxt"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:ems="10"
-                        android:hint="Total"
-                        android:textSize="24sp"
-                        android:textAlignment="center"
-                        android:inputType="text"
                         android:layout_marginTop="12dp"
                         android:background="@color/black3"
+                        android:hint="Total"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:cursorVisible="false"
+                        android:textAlignment="center"
                         android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColorHint="@color/white"
+                        android:textSize="24sp" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/sendOrderButton"
+                        style="@android:style/Widget.Button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/blue_oval"
                         android:layout_marginTop="32dp"
-                        style="@android:style/Widget.Button"
-                        android:textColor="@color/white"
-                        android:text="Send Order" />
+                        android:background="@drawable/blue_oval"
+                        android:text="Send Order"
+                        android:textColor="@color/white" />
                 </LinearLayout>
 
             </LinearLayout>

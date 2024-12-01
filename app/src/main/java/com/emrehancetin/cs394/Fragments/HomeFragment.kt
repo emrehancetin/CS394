@@ -33,9 +33,9 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val cryptoList = listOf(
-            CryptoModel("Bitcoin", "BTC", 173213.78),
-            CryptoModel("Ethereum", "ETH", 45678.12),
-            CryptoModel("Cardano", "ADA", 1.23)
+            CryptoModel("Bitcoin", "BTC", 97309.25),
+            CryptoModel("Ethereum", "ETH", 3728.09),
+            CryptoModel("Cardano", "ADA", 1.07)
         )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.view)

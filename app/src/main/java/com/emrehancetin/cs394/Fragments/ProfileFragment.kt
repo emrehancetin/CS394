@@ -32,9 +32,9 @@ class ProfileFragment : Fragment() {
 
         // Sample data for order history
         val orderHistory = listOf(
-            OrderHistoryModel("1", "2024-12-01", 100.00, "Deposit"),
-            OrderHistoryModel("2", "2024-11-25", 200.00, "Withdraw"),
-            OrderHistoryModel("3", "2024-11-10", 50.00, "Deposit")
+            OrderHistoryModel("1", "2024-12-01", 100.00, "Buy"),
+            OrderHistoryModel("2", "2024-11-25", 200.00, "Sell"),
+            OrderHistoryModel("3", "2024-11-10", 50.00, "Buy")
         )
 
         // Set up the RecyclerView with the adapter
