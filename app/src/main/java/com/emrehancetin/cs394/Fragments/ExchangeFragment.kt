@@ -12,13 +12,17 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
+import com.emrehancetin.cs394.ViewModel.SharedViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ExchangeFragment : Fragment() {
 
     private val btcPrice: Double = 15100.0 // Example BTC price
+    private lateinit var sharedViewModel: SharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +33,8 @@ class ExchangeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
         val amountEdtTxt: EditText = view.findViewById(R.id.amountEdtTxt)
         val totalEdtTxt: EditText = view.findViewById(R.id.totalEdtTxt)
@@ -65,11 +71,11 @@ class ExchangeFragment : Fragment() {
     private fun sendOrder(amountEdtTxt: EditText, totalEdtTxt: EditText, radioGroup: RadioGroup) {
         // Get the amount
         val amountText = amountEdtTxt.text.toString()
-        val amount = if (amountText.isNotEmpty()) amountText else "0"
+        val amount = if (amountText.isNotEmpty()) amountText.toDouble() else 0.0
 
         // Get the total
         val totalText = totalEdtTxt.text.toString()
-        val total = if (totalText.isNotEmpty()) totalText else "0.00"
+        val total = if (totalText.isNotEmpty()) totalText.toDouble() else 0.0
 
         // Get the order type
         val selectedRadioButtonId = radioGroup.checkedRadioButtonId
@@ -82,6 +88,12 @@ class ExchangeFragment : Fragment() {
 
         // Get the current date
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+        // Create the order model
+        val newOrder = OrderHistoryModel(UUID.randomUUID().toString(), date, amount, orderType)
+
+        // Add the order to the shared ViewModel
+        sharedViewModel.addOrder(newOrder)
 
         // Show the toast
         Toast.makeText(

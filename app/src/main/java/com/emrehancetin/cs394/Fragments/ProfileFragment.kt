@@ -5,18 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Adapter.OrderHistoryAdapter
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
+import com.emrehancetin.cs394.ViewModel.SharedViewModel
 
 class ProfileFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {}
-    }
+    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var adapter: OrderHistoryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,17 +28,18 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+
         val recyclerViewOrderHistory: RecyclerView = view.findViewById(R.id.recyclerViewOrderHistory)
-
-        // Sample data for order history
-        val orderHistory = listOf(
-            OrderHistoryModel("1", "2024-12-01", 100.00, "Buy"),
-            OrderHistoryModel("2", "2024-11-25", 200.00, "Sell"),
-            OrderHistoryModel("3", "2024-11-10", 50.00, "Buy")
-        )
-
-        // Set up the RecyclerView with the adapter
         recyclerViewOrderHistory.layoutManager = LinearLayoutManager(requireContext())
-        recyclerViewOrderHistory.adapter = OrderHistoryAdapter(orderHistory)
+
+        // Initialize the adapter
+        adapter = OrderHistoryAdapter(mutableListOf())
+        recyclerViewOrderHistory.adapter = adapter
+
+        // Observe the order history from the shared ViewModel
+        sharedViewModel.orderHistory.observe(viewLifecycleOwner) { updatedHistory ->
+            adapter.updateOrders(updatedHistory)
+        }
     }
 }

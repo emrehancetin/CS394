@@ -9,7 +9,7 @@ import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
 
 class OrderHistoryAdapter(
-    private val orderList: List<OrderHistoryModel>
+    private var orderList: MutableList<OrderHistoryModel>
 ) : RecyclerView.Adapter<OrderHistoryAdapter.OrderHistoryViewHolder>() {
 
     class OrderHistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,5 +32,11 @@ class OrderHistoryAdapter(
 
     override fun getItemCount(): Int {
         return orderList.size
+    }
+
+    fun updateOrders(newOrders: List<OrderHistoryModel>) {
+        orderList.clear()
+        orderList.addAll(newOrders)
+        notifyDataSetChanged()
     }
 }
