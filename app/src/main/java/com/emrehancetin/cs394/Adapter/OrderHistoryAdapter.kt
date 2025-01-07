@@ -28,16 +28,14 @@ class OrderHistoryAdapter(
         holder.dateTextView.text = order.date
         holder.amountTextView.text = "${order.amount}"
         holder.typeTextView.text = order.type
-        if (order.type == "Buy") {
-            holder.typeTextView.setTextColor(holder.itemView.resources.getColor(R.color.green))
-        } else {
-            holder.typeTextView.setTextColor(holder.itemView.resources.getColor(R.color.red))
-        }
+        holder.typeTextView.setTextColor(
+            holder.itemView.resources.getColor(
+                if (order.type == "Buy") R.color.green else R.color.red
+            )
+        )
     }
 
-    override fun getItemCount(): Int {
-        return orderList.size
-    }
+    override fun getItemCount(): Int = orderList.size
 
     fun updateOrders(newOrders: List<OrderHistoryModel>) {
         orderList.clear()

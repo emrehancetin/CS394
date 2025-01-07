@@ -1,11 +1,9 @@
 package com.emrehancetin.cs394.Model
 
-class CryptoModel(
-    name: String,
-    code: String,
-    value: Double
-) {
-    var name: String = name
-    var code: String = code
-    var value: Double = value
-}
+import com.google.gson.annotations.SerializedName
+
+data class CryptoModel(
+    @SerializedName("name") val name: String,
+    @SerializedName("symbol") val code: String,
+    @SerializedName("current_price") val value: Double
+)

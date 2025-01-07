@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Adapter.OrderHistoryAdapter
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
-import com.emrehancetin.cs394.ViewModel.SharedViewModel
+import com.emrehancetin.cs394.ViewModel.AppViewModel
 
 class ProfileFragment : Fragment() {
 
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var appViewModel: AppViewModel
     private lateinit var adapter: OrderHistoryAdapter
 
     override fun onCreateView(
@@ -28,17 +28,15 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        appViewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
 
         val recyclerViewOrderHistory: RecyclerView = view.findViewById(R.id.recyclerViewOrderHistory)
         recyclerViewOrderHistory.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initialize the adapter
-        adapter = OrderHistoryAdapter(mutableListOf())
+        val adapter = OrderHistoryAdapter(mutableListOf())
         recyclerViewOrderHistory.adapter = adapter
 
-        // Observe the order history from the shared ViewModel
-        sharedViewModel.orderHistory.observe(viewLifecycleOwner) { updatedHistory ->
+        appViewModel.orderHistory.observe(viewLifecycleOwner) { updatedHistory ->
             adapter.updateOrders(updatedHistory)
         }
     }

@@ -1,111 +1,117 @@
 package com.emrehancetin.cs394.Fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.emrehancetin.cs394.Model.CryptoModel
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
-import com.emrehancetin.cs394.ViewModel.SharedViewModel
+import com.emrehancetin.cs394.ViewModel.AppViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ExchangeFragment : Fragment() {
 
-    private val btcPrice: Double = 15100.0 // Example BTC price
-    private lateinit var sharedViewModel: SharedViewModel
-    private var selectedOrderType: String = "Buy" // Default order type
+    private lateinit var appViewModel: AppViewModel
+    private lateinit var cryptoDropdown: Spinner
+    private lateinit var amountEditText: EditText
+    private lateinit var priceTextView: TextView
+    private var selectedCrypto: CryptoModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_exchange, container, false)
-    }
+    ): View = inflater.inflate(R.layout.fragment_exchange, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        appViewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
 
-        val amountEdtTxt: EditText = view.findViewById(R.id.amountEdtTxt)
-        val totalEdtTxt: EditText = view.findViewById(R.id.totalEdtTxt)
-        val sendOrderButton: Button = view.findViewById(R.id.sendOrderButton)
-        val radioGroup: RadioGroup = view.findViewById(R.id.radioGroup)
+        cryptoDropdown = view.findViewById(R.id.cryptoDropdown)
+        amountEditText = view.findViewById(R.id.amountEditText)
+        priceTextView = view.findViewById(R.id.priceTextView)
 
-        // Track radio button selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            selectedOrderType = when (checkedId) {
-                R.id.buyButton -> "Buy"
-                R.id.sellButton -> "Sell"
-                else -> "Unknown"
-            }
-        }
+        val buyButton: Button = view.findViewById(R.id.buyButton)
+        val sellButton: Button = view.findViewById(R.id.sellButton)
 
-        // Add TextWatcher to calculate total
-        amountEdtTxt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        // Observe the crypto list and populate the dropdown
+        appViewModel.cryptoList.observe(viewLifecycleOwner) { cryptoList ->
+            val cryptoNames = cryptoList.map { it.name }
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.spinner_item, // Use custom layout
+                cryptoNames
+            )
+            adapter.setDropDownViewResource(R.layout.spinner_item) // Dropdown layout
+            cryptoDropdown.adapter = adapter
 
-            override fun afterTextChanged(s: Editable?) {
-                val amountText = s.toString()
-                if (amountText.isNotEmpty()) {
-                    try {
-                        val amount = amountText.toDouble()
-                        val total = amount * btcPrice
-                        totalEdtTxt.setText(String.format("%.2f", total))
-                    } catch (e: NumberFormatException) {
-                        totalEdtTxt.setText("")
-                    }
-                } else {
-                    totalEdtTxt.setText("")
+            cryptoDropdown.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    selectedCrypto = cryptoList[position]
+                    priceTextView.text = "Current Price: $${String.format("%.2f", selectedCrypto?.value ?: 0.0)}"
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    selectedCrypto = null
                 }
             }
-        })
-
-        // Send Order
-        sendOrderButton.setOnClickListener {
-            sendOrder(amountEdtTxt, totalEdtTxt)
         }
+
+
+        buyButton.setOnClickListener {
+            processOrder("Buy")
+        }
+
+        sellButton.setOnClickListener {
+            processOrder("Sell")
+        }
+
+        appViewModel.loadCryptos() // Ensure cryptos are loaded dynamically
     }
 
-    private fun sendOrder(amountEdtTxt: EditText, totalEdtTxt: EditText) {
-        val amountText = amountEdtTxt.text.toString()
-        val amount = if (amountText.isNotEmpty()) amountText.toDouble() else 0.0
-        val totalText = totalEdtTxt.text.toString()
-        val total = if (totalText.isNotEmpty()) totalText.toDouble() else 0.0
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    private fun processOrder(orderType: String) {
+        val amountText = amountEditText.text.toString()
+        val amount = amountText.toDoubleOrNull() ?: 0.0
+        val crypto = selectedCrypto
 
-        // Validate Sell Orders
-        if (selectedOrderType == "Sell") {
-            val walletBalance = sharedViewModel.btcBalance.value ?: 0.0
-            if (amount > walletBalance) {
-                Toast.makeText(
-                    requireContext(),
-                    "Insufficient BTC balance to sell. Available: ${String.format("%.6f", walletBalance)} BTC",
-                    Toast.LENGTH_LONG
-                ).show()
-                return // Stop the order process
-            }
+        if (crypto == null || amount <= 0) {
+            Toast.makeText(requireContext(), "Please select a valid crypto and enter an amount.", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        // Update Wallet and Cash Balance
-        sharedViewModel.updateWallet(amount, total, selectedOrderType)
+        val total = amount * crypto.value
 
-        // Create Order
-        val newOrder = OrderHistoryModel(UUID.randomUUID().toString(), date, amount, selectedOrderType)
-        sharedViewModel.addOrder(newOrder)
+        if (orderType == "Sell" && (appViewModel.btcBalance.value ?: 0.0) < amount) {
+            Toast.makeText(
+                requireContext(),
+                "Insufficient balance to sell ${crypto.name}.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
 
-        // Show Toast
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+        // Update wallet balances and add order
+        appViewModel.updateWallet(amount, total, orderType)
+        appViewModel.addOrder(OrderHistoryModel(UUID.randomUUID().toString(), date, amount, orderType))
+
         Toast.makeText(
             requireContext(),
-            "Order sent successfully.",
-            Toast.LENGTH_LONG
+            "$orderType Order for ${crypto.name} placed successfully!",
+            Toast.LENGTH_SHORT
         ).show()
+
+        amountEditText.text.clear()
     }
 }
