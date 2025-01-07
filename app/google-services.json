@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "313240909422",
+    "project_id": "cs394-5ef21",
+    "storage_bucket": "cs394-5ef21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:313240909422:android:2e2be988e4a3afb5fb187f",
+        "android_client_info": {
+          "package_name": "com.emrehancetin.cs394"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGMcFJ-bbfbAOOGka0yJmGMEqIhpnWF0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

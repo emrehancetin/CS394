@@ -26,7 +26,7 @@
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/registerButton"
+        android:id="@+id/registerButton2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Register" />

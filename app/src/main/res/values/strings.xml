@@ -2,4 +2,8 @@
     <string name="app_name">CS394</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="type_your_password">Type your password</string>
+    <string name="type_your_email">Type your email</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
 </resources>

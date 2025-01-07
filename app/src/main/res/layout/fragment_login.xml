@@ -1,26 +1,55 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/login_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
 
     <EditText
-        android:id="@+id/emailInput"
-        android:layout_width="match_parent"
+        android:id="@+id/emailLoginText"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:layout_marginTop="150dp"
+        android:ems="10"
+        android:textColor="@color/white"
+        android:textColorHint="@color/login_hint"
+        android:hint="@string/type_your_email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/passwordInput"
-        android:layout_width="match_parent"
+        android:id="@+id/passwordLoginText"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:layout_marginTop="25dp"
+        android:ems="10"
+        android:hint="@string/type_your_password"
+        android:inputType="textPassword"
+        android:textColor="@color/white"
+        android:textColorHint="@color/login_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailLoginText" />
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login" />
-</LinearLayout>
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="35dp"
+        android:text="@string/login"
+        app:layout_constraintEnd_toEndOf="@+id/passwordLoginText"
+        app:layout_constraintTop_toBottomOf="@+id/passwordLoginText" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:text="@string/register"
+        app:layout_constraintStart_toStartOf="@+id/passwordLoginText"
+        app:layout_constraintTop_toTopOf="@+id/loginButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>

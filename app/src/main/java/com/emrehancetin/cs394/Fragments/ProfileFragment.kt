@@ -6,23 +6,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Adapter.OrderHistoryAdapter
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
 import com.emrehancetin.cs394.ViewModel.AppViewModel
+import com.emrehancetin.cs394.databinding.FragmentProfileBinding
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class ProfileFragment : Fragment() {
+    private var _binding:FragmentProfileBinding? = null
+    private val binding get()= _binding!!
 
     private lateinit var appViewModel: AppViewModel
     private lateinit var adapter: OrderHistoryAdapter
+
+    private lateinit var auth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        auth = Firebase.auth
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,7 +46,7 @@ class ProfileFragment : Fragment() {
 
         appViewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
 
-        val recyclerViewOrderHistory: RecyclerView = view.findViewById(R.id.recyclerViewOrderHistory)
+        val recyclerViewOrderHistory: RecyclerView = binding.recyclerViewOrderHistory
         recyclerViewOrderHistory.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = OrderHistoryAdapter(mutableListOf())
@@ -39,5 +55,15 @@ class ProfileFragment : Fragment() {
         appViewModel.orderHistory.observe(viewLifecycleOwner) { updatedHistory ->
             adapter.updateOrders(updatedHistory)
         }
+
+        val signOutButton = binding.signOutButton
+        signOutButton.setOnClickListener { signOut(it) }
+    }
+
+    private fun signOut(view: View){
+        auth.signOut()
+
+        val action = ProfileFragmentDirections.actionProfileFragmentToLoginFragment()
+        Navigation.findNavController(requireView()).navigate(action)
     }
 }

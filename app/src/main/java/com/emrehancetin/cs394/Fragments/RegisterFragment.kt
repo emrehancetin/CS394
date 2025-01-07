@@ -22,7 +22,7 @@ class RegisterFragment : Fragment() {
         val emailInput: EditText = view.findViewById(R.id.emailInput)
         val passwordInput: EditText = view.findViewById(R.id.passwordInput)
         val confirmPasswordInput: EditText = view.findViewById(R.id.confirmPasswordInput)
-        val registerButton: Button = view.findViewById(R.id.registerButton)
+        val registerButton: Button = view.findViewById(R.id.registerButton2)
 
         registerButton.setOnClickListener {
             val email = emailInput.text.toString()

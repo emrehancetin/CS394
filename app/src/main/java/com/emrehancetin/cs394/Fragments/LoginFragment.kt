@@ -8,31 +8,78 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.emrehancetin.cs394.R
+import com.emrehancetin.cs394.databinding.FragmentLoginBinding
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class LoginFragment : Fragment() {
+    private var _binding : FragmentLoginBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var auth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+        auth = Firebase.auth
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_login, container, false)
+
+    ): View? {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
-        val emailInput: EditText = view.findViewById(R.id.emailInput)
-        val passwordInput: EditText = view.findViewById(R.id.passwordInput)
         val loginButton: Button = view.findViewById(R.id.loginButton)
+        val registerButton:Button = binding.registerButton
 
-        loginButton.setOnClickListener {
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
+        loginButton.setOnClickListener { login(it) }
+        registerButton.setOnClickListener { register(it) }
+        val guncelKullanici = auth.currentUser
+        if (guncelKullanici != null){
+            //kullanıcı daha önceden giriş yapmış
+            val action = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+            Navigation.findNavController(view).navigate(action)
+        }
 
-            if (email.isNotBlank() && password.isNotBlank()) {
-                Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-            } else {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+
+    }
+
+    private fun register(view: View){
+        val email = binding.emailLoginText.text.toString()
+        val password = binding.passwordLoginText.text.toString()
+        if(email.isNotEmpty() && password.isNotEmpty()){
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val action = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+                        Navigation.findNavController(view).navigate(action)
+                    }
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(),exception.localizedMessage,Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+    private fun login(view: View){
+        val email = binding.emailLoginText.text.toString()
+        val password = binding.passwordLoginText.text.toString()
+        if(email.isNotEmpty() && password.isNotEmpty()){
+            auth.signInWithEmailAndPassword(email,password).addOnSuccessListener {
+                val action = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+                Navigation.findNavController(view).navigate(action)
+            }.addOnFailureListener {exception ->
+                Toast.makeText(requireContext(),exception.localizedMessage,Toast.LENGTH_LONG).show()
             }
         }
     }

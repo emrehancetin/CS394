@@ -11,4 +11,6 @@
     <color name="black2">#1b2129</color>
     <color name="black3">#282f3c</color>
     <color name="white_half">#10ffffff</color>
+    <color name="login_background">#2c2966</color>
+    <color name="login_hint">#a3a3a3</color>
 </resources>
