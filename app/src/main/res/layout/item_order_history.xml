@@ -1,43 +1,62 @@
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
 
+    <!-- Date -->
     <TextView
         android:id="@+id/textViewDate"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="2024-12-27"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_weight="1"
+        android:text="2024-12-01"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
 
+    <!-- Crypto Name -->
+    <TextView
+        android:id="@+id/textViewCryptoName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Bitcoin"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:gravity="center" />
+
+    <!-- Unit Price -->
+    <TextView
+        android:id="@+id/textViewUnitPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Unit: $50000.00"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:gravity="center" />
+
+    <!-- Amount -->
     <TextView
         android:id="@+id/textViewAmount"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="100.00"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textViewType" />
+        android:layout_weight="1"
+        android:text="0.5"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:gravity="center" />
 
+    <!-- Type (Buy/Sell) -->
     <TextView
         android:id="@+id/textViewType"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_weight="1"
         android:text="Buy"
-        app:layout_constraintStart_toEndOf="@+id/textViewDate"
-        app:layout_constraintTop_toTopOf="@+id/textViewDate" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:text="$"
-        app:layout_constraintStart_toEndOf="@+id/textViewType"
-        app:layout_constraintTop_toTopOf="@+id/textViewType" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:textColor="@color/green"
+        android:textSize="14sp"
+        android:gravity="center" />
+</LinearLayout>

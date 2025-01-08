@@ -4,20 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Adapter.CryptoAdapter
-import com.emrehancetin.cs394.Model.CryptoModel
+import com.emrehancetin.cs394.Adapter.OwnedCryptoAdapter
 import com.emrehancetin.cs394.R
 import com.emrehancetin.cs394.ViewModel.AppViewModel
 
 class HomeFragment : Fragment() {
 
     private lateinit var appViewModel: AppViewModel
-    private lateinit var adapter: CryptoAdapter
+    private lateinit var cryptoAdapter: CryptoAdapter
+    private lateinit var ownedCryptoAdapter: OwnedCryptoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,25 +30,37 @@ class HomeFragment : Fragment() {
 
         appViewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
 
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val cashTextView: TextView = view.findViewById(R.id.cashBalanceTextView)
+        val ownedRecyclerView: RecyclerView = view.findViewById(R.id.ownedRecyclerView)
+        val cryptoRecyclerView: RecyclerView = view.findViewById(R.id.cryptoRecyclerView)
 
-        adapter = CryptoAdapter(mutableListOf()) { crypto ->
-            Toast.makeText(
-                requireContext(),
-                "Selected: ${crypto.name} (${crypto.code}) - $${String.format("%.2f", crypto.value)}",
-                Toast.LENGTH_SHORT
-            ).show()
+        // Observe cash balance
+        appViewModel.ownedCryptoList.observe(viewLifecycleOwner) { ownedList ->
+            ownedCryptoAdapter.updateOwnedCryptoList(ownedList)
         }
-        recyclerView.adapter = adapter
+
+        // Setup Owned Cryptos RecyclerView
+        ownedRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        ownedCryptoAdapter = OwnedCryptoAdapter(mutableListOf())
+        ownedRecyclerView.adapter = ownedCryptoAdapter
+
+        // Setup Cryptos RecyclerView
+        cryptoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        cryptoAdapter = CryptoAdapter(mutableListOf()) {}
+        cryptoRecyclerView.adapter = cryptoAdapter
+
+        appViewModel.cashBalance.observe(viewLifecycleOwner) { cash ->
+            cashTextView.text = "Cash: $${String.format("%.2f", cash)}"
+        }
+
+        appViewModel.ownedCryptoList.observe(viewLifecycleOwner) { ownedList ->
+            ownedCryptoAdapter.updateOwnedCryptoList(ownedList)
+        }
 
         appViewModel.cryptoList.observe(viewLifecycleOwner) { cryptoList ->
-            println("Observed crypto list: $cryptoList")
-            adapter.updateCryptoList(cryptoList)
+            cryptoAdapter.updateCryptoList(cryptoList)
         }
 
         appViewModel.loadCryptos()
     }
-
-
 }

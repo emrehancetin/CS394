@@ -39,24 +39,17 @@ class ExchangeFragment : Fragment() {
         val buyButton: Button = view.findViewById(R.id.buyButton)
         val sellButton: Button = view.findViewById(R.id.sellButton)
 
-        // Observe the crypto list and populate the dropdown
         appViewModel.cryptoList.observe(viewLifecycleOwner) { cryptoList ->
             val cryptoNames = cryptoList.map { it.name }
             val adapter = ArrayAdapter(
                 requireContext(),
-                R.layout.spinner_item, // Use custom layout
+                android.R.layout.simple_spinner_dropdown_item,
                 cryptoNames
             )
-            adapter.setDropDownViewResource(R.layout.spinner_item) // Dropdown layout
             cryptoDropdown.adapter = adapter
 
             cryptoDropdown.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     selectedCrypto = cryptoList[position]
                     priceTextView.text = "Current Price: $${String.format("%.2f", selectedCrypto?.value ?: 0.0)}"
                 }
@@ -67,16 +60,8 @@ class ExchangeFragment : Fragment() {
             }
         }
 
-
-        buyButton.setOnClickListener {
-            processOrder("Buy")
-        }
-
-        sellButton.setOnClickListener {
-            processOrder("Sell")
-        }
-
-        appViewModel.loadCryptos() // Ensure cryptos are loaded dynamically
+        buyButton.setOnClickListener { processOrder("Buy") }
+        sellButton.setOnClickListener { processOrder("Sell") }
     }
 
     private fun processOrder(orderType: String) {
@@ -91,7 +76,7 @@ class ExchangeFragment : Fragment() {
 
         val total = amount * crypto.value
 
-        if (orderType == "Sell" && (appViewModel.btcBalance.value ?: 0.0) < amount) {
+        if (orderType == "Sell" && !_hasSufficientCrypto(crypto.code.uppercase(), amount)) {
             Toast.makeText(
                 requireContext(),
                 "Insufficient balance to sell ${crypto.name}.",
@@ -100,11 +85,19 @@ class ExchangeFragment : Fragment() {
             return
         }
 
+        if (orderType == "Buy" && (appViewModel.cashBalance.value ?: 0.0) < total) {
+            Toast.makeText(
+                requireContext(),
+                "Insufficient cash to buy ${crypto.name}.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-        // Update wallet balances and add order
-        appViewModel.updateWallet(amount, total, orderType)
-        appViewModel.addOrder(OrderHistoryModel(UUID.randomUUID().toString(), date, amount, orderType))
+        appViewModel.updateWallet(crypto.code, amount, total, orderType)
+        appViewModel.addOrder(OrderHistoryModel(UUID.randomUUID().toString(), date, crypto.code, crypto.value ,amount, orderType))
 
         Toast.makeText(
             requireContext(),
@@ -113,5 +106,10 @@ class ExchangeFragment : Fragment() {
         ).show()
 
         amountEditText.text.clear()
+    }
+
+    private fun _hasSufficientCrypto(symbol: String, amount: Double): Boolean {
+        val ownedCrypto = appViewModel.ownedCryptoList.value?.find { it.symbol == symbol }
+        return ownedCrypto?.amount ?: 0.0 >= amount
     }
 }

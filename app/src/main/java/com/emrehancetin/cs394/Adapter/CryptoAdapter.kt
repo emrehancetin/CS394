@@ -1,6 +1,5 @@
 package com.emrehancetin.cs394.Adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +28,7 @@ class CryptoAdapter(
         val crypto = cryptoList[position]
         holder.nameTextView.text = crypto.name
         holder.codeTextView.text = crypto.code.uppercase()
-        holder.valueTextView.text = "$${String.format("%.2f", crypto.value)}"
+        holder.valueTextView.text = "Price: $${String.format("%.2f", crypto.value)}"
     }
 
     override fun getItemCount(): Int = cryptoList.size
@@ -40,4 +39,3 @@ class CryptoAdapter(
         notifyDataSetChanged()
     }
 }
-

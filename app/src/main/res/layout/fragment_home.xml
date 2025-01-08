@@ -28,25 +28,36 @@
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/cashBalanceTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:text="Cash: $1,000,000.00"
-                android:textSize="18sp"
-                android:textColor="@color/white" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/walletBalanceTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:text="Wallet: 0.000000 BTC"
-                android:textSize="18sp"
-                android:textColor="@color/white" />
+                <TextView
+                    android:id="@+id/cashBalanceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:text="Cash: $1,000,000.00"
+                    android:textSize="18sp"
+                    android:textColor="@color/white" />
+
+                <!-- Owned Cryptos Section -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ownedRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
+
+                <!-- Cryptos Section -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/cryptoRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/view"
@@ -58,8 +69,10 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                tools:listitem="@layout/item_crypto" />
         </LinearLayout>
     </ScrollView>
 

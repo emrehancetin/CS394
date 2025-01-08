@@ -14,6 +14,8 @@ class OrderHistoryAdapter(
 
     class OrderHistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dateTextView: TextView = itemView.findViewById(R.id.textViewDate)
+        val cryptoNameTextView: TextView = itemView.findViewById(R.id.textViewCryptoName)
+        val unitPriceTextView: TextView = itemView.findViewById(R.id.textViewUnitPrice)
         val amountTextView: TextView = itemView.findViewById(R.id.textViewAmount)
         val typeTextView: TextView = itemView.findViewById(R.id.textViewType)
     }
@@ -26,8 +28,11 @@ class OrderHistoryAdapter(
     override fun onBindViewHolder(holder: OrderHistoryViewHolder, position: Int) {
         val order = orderList[position]
         holder.dateTextView.text = order.date
+        holder.cryptoNameTextView.text = order.cryptoName
+        holder.unitPriceTextView.text = "Unit Price: $${String.format("%.2f", order.unitPrice)}"
         holder.amountTextView.text = "${order.amount}"
         holder.typeTextView.text = order.type
+
         holder.typeTextView.setTextColor(
             holder.itemView.resources.getColor(
                 if (order.type == "Buy") R.color.green else R.color.red
