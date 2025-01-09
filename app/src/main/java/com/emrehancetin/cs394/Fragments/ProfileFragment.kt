@@ -56,6 +56,8 @@ class ProfileFragment : Fragment() {
             adapter.updateOrders(updatedHistory)
         }
 
+
+        binding.textViewPhoto.setText(auth.currentUser?.email.toString())
         val signOutButton = binding.signOutButton
         signOutButton.setOnClickListener { signOut(it) }
     }
@@ -65,5 +67,10 @@ class ProfileFragment : Fragment() {
 
         val action = ProfileFragmentDirections.actionProfileFragmentToLoginFragment()
         Navigation.findNavController(requireView()).navigate(action)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

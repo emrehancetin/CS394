@@ -1,6 +1,5 @@
 package com.emrehancetin.cs394.ViewModel
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,11 +9,22 @@ import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.Model.OwnedCryptoModel
 import com.emrehancetin.cs394.Network.CryptoRepository
 import com.emrehancetin.cs394.Network.NetworkModule
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.Console
+import java.util.UUID
 
 class AppViewModel : ViewModel() {
+
+    private var auth: FirebaseAuth = Firebase.auth
+    private var db: FirebaseFirestore = Firebase.firestore
+
 
     // Crypto List
     private val _cryptoList = MutableLiveData<List<CryptoModel>>()
@@ -38,10 +48,51 @@ class AppViewModel : ViewModel() {
     private val repository = CryptoRepository(NetworkModule.coinGeckoService)
 
     init {
+        fetchWalletFromFirestore()
+        fetchHistoryFromFirestore()
         startRefreshingCryptoData()
         loadOwnedCryptos()
+
     }
 
+    public fun fetchWalletFromFirestore() {
+        val userEmail = auth.currentUser?.email.toString()
+        db.collection("Wallets")
+            .whereEqualTo("email", userEmail)
+            .addSnapshotListener { value, _ ->
+                val wallet = value?.documents?.firstOrNull()?.getDouble("wallet") ?: 0.0
+                _cashBalance.value = wallet
+            }
+    }
+    public fun fetchHistoryFromFirestore(){
+        _orderHistory.value?.clear()
+        val userEmail = auth.currentUser?.email.toString()
+        db.collection("Transactions").whereEqualTo("email",userEmail).orderBy("date", Query.Direction.DESCENDING).addSnapshotListener{ value, _->
+            if (value != null) {
+                for(document in value.documents){
+                    val id = document.get("id") as String
+                    val date = document.get("date") as String
+                    val code = document.get("code") as String
+                    val amount = document.getDouble("amount") as Double
+                    val valuE = document.getDouble("value") as Double
+                    val orderType = document.get("orderType") as String
+                    val oldOrder = OrderHistoryModel(
+                        id = id,
+                        date = date,
+                        cryptoName = code,
+                        unitPrice = valuE,
+                        amount = amount,
+                        type = orderType
+                    )
+                    _orderHistory.value?.add(oldOrder)
+
+
+                }
+
+            }
+
+        }
+    }
     // Load Cryptos from API
     fun loadCryptos() {
         viewModelScope.launch {
@@ -60,12 +111,23 @@ class AppViewModel : ViewModel() {
 
     private fun loadOwnedCryptos() {
         // Simulate owned cryptocurrencies for demonstration
-        val ownedCryptos = listOf(
-            OwnedCryptoModel("Bitcoin", "BTC", 0.0),
-            OwnedCryptoModel("Ethereum", "ETH", 0.0),
-            OwnedCryptoModel("Solana", "SOL", 0.0)
-        )
-        _ownedCryptoList.value = ownedCryptos.toMutableList()
+        val userEmail = auth.currentUser?.email.toString()
+        db.collection("OwnedCrypto").whereEqualTo("email",userEmail).get().addOnSuccessListener {documents ->
+            if (documents != null && !documents.isEmpty) {
+                for (document in documents) {
+                    val ownedCryptos = listOf(
+                        OwnedCryptoModel("Bitcoin", "BTC", document.getDouble("BTC") as Double),
+                        OwnedCryptoModel("Ethereum", "ETH", document.getDouble("ETH") as Double),
+                        OwnedCryptoModel("Solana", "SOL", document.getDouble("SOL") as Double)
+                    )
+                    _ownedCryptoList.value = ownedCryptos.toMutableList()
+                }
+            }
+        }.addOnFailureListener { exception ->
+            println(exception.localizedMessage)
+        }
+
+
     }
 
 
@@ -86,18 +148,82 @@ class AppViewModel : ViewModel() {
 
     // Add a new order to the history
     fun addOrder(order: OrderHistoryModel) {
+        val userEmail = auth.currentUser?.email.toString()
         _orderHistory.value?.add(order)
         _orderHistory.value = _orderHistory.value // Trigger LiveData update
+
+        //db process
+            val postMap = hashMapOf<String,Any>()
+            postMap.put("id",order.id.toString())
+            postMap.put("email",userEmail)
+            postMap.put("date",order.date.toString())
+            postMap.put("code",order.cryptoName.toString())
+            postMap.put("amount",order.amount)
+            postMap.put("value",order.unitPrice)
+            postMap.put("orderType",order.type.toString())
+
+            db.collection("Transactions").add(postMap).addOnSuccessListener { documentReference ->
+                println("db process is successful")
+            }.addOnFailureListener { exception ->
+                println(exception.localizedMessage)
+            }
+
+
+
     }
 
-    fun updateOwnedCrypto(cryptoCode: String, amount: Double, orderType: String) {
+    fun updateOwnedCrypto(cryptoCode: String, amount: Double, orderType: String, currentUser: FirebaseUser?) {
         val ownedList = _ownedCryptoList.value ?: mutableListOf()
         val ownedCrypto = ownedList.find { it.symbol.equals(cryptoCode, ignoreCase = true) }
-
+        val userEmail = currentUser?.email
         when (orderType) {
             "Buy" -> {
                 if (ownedCrypto != null) {
                     ownedCrypto.amount += amount
+
+                    db.collection("OwnedCrypto")
+                        .whereEqualTo("email", userEmail.toString())
+                        .get()
+                        .addOnSuccessListener { value ->
+                            if (value != null && !value.isEmpty) {
+                                for (document in value.documents) {
+                                    if(cryptoCode == "btc"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("BTC", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - btc - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }else if(cryptoCode== "eth"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("ETH", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - eth - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }else if(cryptoCode=="sol"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("SOL", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - sol - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }
+
+                                }
+                            } else {
+                                println("No matching document found for email: $userEmail")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            println("Error fetching OwnedCrypto: ${e.message}")
+                        }
                 } else {
                     _ownedCryptoList.value?.add(
                         OwnedCryptoModel(
@@ -111,9 +237,52 @@ class AppViewModel : ViewModel() {
             "Sell" -> {
                 if (ownedCrypto != null) {
                     ownedCrypto.amount -= amount
-                    if (ownedCrypto.amount <= 0) {
+                    /*if (ownedCrypto.amount <= 0) {
                         _ownedCryptoList.value?.remove(ownedCrypto)
-                    }
+                    }*/
+                    db.collection("OwnedCrypto")
+                        .whereEqualTo("email", userEmail.toString())
+                        .get()
+                        .addOnSuccessListener { value ->
+                            if (value != null && !value.isEmpty) {
+                                for (document in value.documents) {
+                                    if(cryptoCode == "btc"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("BTC", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - btc - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }else if(cryptoCode== "eth"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("ETH", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - eth - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }else if(cryptoCode=="sol"){
+                                        db.collection("OwnedCrypto").document(document.id)
+                                            .update("SOL", ownedCrypto.amount)
+                                            .addOnSuccessListener {
+                                                println("OwnedCrypto - sol - updated successfully!")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                println("Error updating OwnedCrypto: ${e.message}")
+                                            }
+                                    }
+
+                                }
+                            } else {
+                                println("No matching document found for email: $userEmail")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            println("Error fetching OwnedCrypto: ${e.message}")
+                        }
                 }
             }
         }
@@ -121,13 +290,66 @@ class AppViewModel : ViewModel() {
     }
 
     // Update Wallet and Cash Balances
-    fun updateWallet(cryptoCode: String, amount: Double, total: Double, orderType: String) {
+    fun updateWallet(
+        cryptoCode: String,
+        amount: Double,
+        total: Double,
+        orderType: String,
+        currentUser: FirebaseUser?
+    ) {
+        val userEmail= currentUser?.email
         if (orderType == "Buy" && (_cashBalance.value ?: 0.0) >= total) {
-            updateOwnedCrypto(cryptoCode, amount, orderType)
+            updateOwnedCrypto(cryptoCode, amount, orderType,currentUser)
             _cashBalance.value = (_cashBalance.value ?: 0.0) - total
+            db.collection("Wallets")
+                .whereEqualTo("email", userEmail.toString())
+                .get()
+                .addOnSuccessListener { value ->
+                    if (value != null && !value.isEmpty) {
+                        for (document in value.documents) {
+                            db.collection("Wallets").document(document.id)
+                                .update("wallet", _cashBalance.value)
+                                .addOnSuccessListener {
+                                    println("Wallet updated successfully!")
+                                }
+                                .addOnFailureListener { e ->
+                                    println("Error updating wallet: ${e.message}")
+                                }
+                        }
+                    } else {
+                        println("No matching document found for email: $userEmail")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    println("Error fetching wallet: ${e.message}")
+                }
+
         } else if (orderType == "Sell") {
-            updateOwnedCrypto(cryptoCode, amount, orderType)
+            updateOwnedCrypto(cryptoCode, amount, orderType,currentUser)
             _cashBalance.value = (_cashBalance.value ?: 0.0) + total
+
+            db.collection("Wallets")
+                .whereEqualTo("email", userEmail.toString())
+                .get()
+                .addOnSuccessListener { value ->
+                    if (value != null && !value.isEmpty) {
+                        for (document in value.documents) {
+                            db.collection("Wallets").document(document.id)
+                                .update("wallet", _cashBalance.value)
+                                .addOnSuccessListener {
+                                    println("Wallet updated successfully!")
+                                }
+                                .addOnFailureListener { e ->
+                                    println("Error updating wallet: ${e.message}")
+                                }
+                        }
+                    } else {
+                        println("No matching document found for email: $userEmail")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    println("Error fetching wallet: ${e.message}")
+                }
         }
     }
 }

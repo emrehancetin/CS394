@@ -11,16 +11,34 @@ import com.emrehancetin.cs394.Model.CryptoModel
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
 import com.emrehancetin.cs394.ViewModel.AppViewModel
+import com.emrehancetin.cs394.databinding.FragmentExchangeBinding
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ExchangeFragment : Fragment() {
+    private var _binding: FragmentExchangeBinding? = null;
+    private val binding get() = _binding!!
+
 
     private lateinit var appViewModel: AppViewModel
     private lateinit var cryptoDropdown: Spinner
     private lateinit var amountEditText: EditText
     private lateinit var priceTextView: TextView
     private var selectedCrypto: CryptoModel? = null
+
+    private lateinit var auth:FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        auth = Firebase.auth
+        db = Firebase.firestore
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,7 +114,7 @@ class ExchangeFragment : Fragment() {
 
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-        appViewModel.updateWallet(crypto.code, amount, total, orderType)
+        appViewModel.updateWallet(crypto.code, amount, total, orderType,auth.currentUser)
         appViewModel.addOrder(OrderHistoryModel(UUID.randomUUID().toString(), date, crypto.code, crypto.value ,amount, orderType))
 
         Toast.makeText(
@@ -105,11 +123,18 @@ class ExchangeFragment : Fragment() {
             Toast.LENGTH_SHORT
         ).show()
 
+
+
         amountEditText.text.clear()
     }
 
     private fun _hasSufficientCrypto(symbol: String, amount: Double): Boolean {
         val ownedCrypto = appViewModel.ownedCryptoList.value?.find { it.symbol == symbol }
         return ownedCrypto?.amount ?: 0.0 >= amount
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
