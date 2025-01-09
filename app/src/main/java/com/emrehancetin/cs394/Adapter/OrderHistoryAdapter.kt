@@ -1,43 +1,41 @@
 package com.emrehancetin.cs394.Adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Model.OrderHistoryModel
 import com.emrehancetin.cs394.R
+import com.emrehancetin.cs394.databinding.ItemOrderHistoryBinding
 
 class OrderHistoryAdapter(
     private var orderList: MutableList<OrderHistoryModel>
 ) : RecyclerView.Adapter<OrderHistoryAdapter.OrderHistoryViewHolder>() {
 
-    class OrderHistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val dateTextView: TextView = itemView.findViewById(R.id.textViewDate)
-        val cryptoNameTextView: TextView = itemView.findViewById(R.id.textViewCryptoName)
-        val unitPriceTextView: TextView = itemView.findViewById(R.id.textViewUnitPrice)
-        val amountTextView: TextView = itemView.findViewById(R.id.textViewAmount)
-        val typeTextView: TextView = itemView.findViewById(R.id.textViewType)
-    }
+    class OrderHistoryViewHolder(val binding: ItemOrderHistoryBinding)
+        : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderHistoryViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order_history, parent, false)
-        return OrderHistoryViewHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemOrderHistoryBinding.inflate(inflater, parent, false)
+        return OrderHistoryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: OrderHistoryViewHolder, position: Int) {
         val order = orderList[position]
-        holder.dateTextView.text = order.date
-        holder.cryptoNameTextView.text = order.cryptoName
-        holder.unitPriceTextView.text = "Unit Price: $${String.format("%.2f", order.unitPrice)}"
-        holder.amountTextView.text = "${order.amount}"
-        holder.typeTextView.text = order.type
+        with(holder.binding) {
+            textViewDate.text = order.date
+            textViewCryptoName.text = order.cryptoName
+            textViewUnitPrice.text = "Unit Price: $${String.format("%.2f", order.unitPrice)}"
+            textViewAmount.text = "${order.amount}"
+            textViewType.text = order.type
 
-        holder.typeTextView.setTextColor(
-            holder.itemView.resources.getColor(
-                if (order.type == "Buy") R.color.green else R.color.red
+            // Set text color based on Buy/Sell
+            textViewType.setTextColor(
+                root.resources.getColor(
+                    if (order.type == "Buy") R.color.green else R.color.red
+                )
             )
-        )
+        }
     }
 
     override fun getItemCount(): Int = orderList.size

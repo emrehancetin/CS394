@@ -1,34 +1,37 @@
 package com.emrehancetin.cs394.Adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.emrehancetin.cs394.Model.CryptoModel
-import com.emrehancetin.cs394.R
+import com.emrehancetin.cs394.databinding.ItemCryptoBinding
 
 class CryptoAdapter(
     private var cryptoList: MutableList<CryptoModel>,
     private val onItemClick: (CryptoModel) -> Unit
 ) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
 
-    class CryptoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameTextView: TextView = itemView.findViewById(R.id.cryptoName)
-        val codeTextView: TextView = itemView.findViewById(R.id.cryptoCode)
-        val valueTextView: TextView = itemView.findViewById(R.id.cryptoValue)
-    }
+    class CryptoViewHolder(val binding: ItemCryptoBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_crypto, parent, false)
-        return CryptoViewHolder(view)
+        // Inflate the layout using View Binding
+        val binding = ItemCryptoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CryptoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CryptoViewHolder, position: Int) {
         val crypto = cryptoList[position]
-        holder.nameTextView.text = crypto.name
-        holder.codeTextView.text = crypto.code.uppercase()
-        holder.valueTextView.text = "Price: $${String.format("%.2f", crypto.value)}"
+        with(holder.binding) {
+            // Bind your data here
+            cryptoName.text = crypto.name
+            cryptoCode.text = crypto.code.uppercase()
+            cryptoValue.text = "Price: $${String.format("%.2f", crypto.value)}"
+
+            // Handle item click
+            root.setOnClickListener {
+                onItemClick(crypto)
+            }
+        }
     }
 
     override fun getItemCount(): Int = cryptoList.size
