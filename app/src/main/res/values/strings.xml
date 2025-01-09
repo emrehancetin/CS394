@@ -6,4 +6,15 @@
     <string name="type_your_email">Type your email</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="account_creation_date">Account Creation Date : </string>
+    <string name="hello">HELLO</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="account">Account</string>
+    <string name="_905328765534">+905328765534</string>
+    <string name="support_line">Support Line</string>
+    <string name="_1_how_do_i_buy_cryptocurrency">1. How do I buy cryptocurrency?</string>
+    <string name="choose_coin_enter_amount_click_buy_or_sell_button"><![CDATA[-> Choose Coin, Enter Amount, Click Buy or Sell Button]]></string>
+    <string name="you_can_see_the_wallet_by_clicking_on_home_from_navigation"> -> You can see the wallet by clicking on home from navigation.</string>
+    <string name="_2_how_can_i_see_my_coins">2. How can I see my coins??</string>
+    <string name="_3_where_can_i_see_the_transactions_i_have_made">3.Where can I see the transactions I have made?</string>
 </resources>

@@ -1,67 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@color/background">
 
+
+
+
+
+
+
     <!-- Dropdown for selecting crypto -->
     <Spinner
         android:id="@+id/cryptoDropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:popupBackground="@color/black" />
+        android:layout_marginTop="24dp"
+        android:popupBackground="@color/black"
 
+        android:spinnerMode="dropdown"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
 
     <!-- TextView to display the selected crypto's price -->
     <TextView
         android:id="@+id/priceTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Current Price: $0.00"
-        android:textSize="16sp"
         android:textColor="@color/white"
-        android:layout_marginBottom="16dp" />
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/cryptoDropdown"
+        app:layout_constraintTop_toTopOf="@+id/cryptoDropdown" />
+
 
     <!-- EditText for entering the amount -->
     <EditText
         android:id="@+id/amountEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:hint="Enter Amount"
         android:inputType="numberDecimal"
         android:textColor="@color/white"
         android:textColorHint="@color/grey"
-        android:layout_marginBottom="16dp" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/priceTextView" />
     <!-- Buy and Sell Buttons -->
     <LinearLayout
+        android:id="@+id/buttonsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:gravity="center">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amountEditText">
 
         <Button
             android:id="@+id/buyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="Buy"
             android:background="@color/green"
-            android:textColor="@color/white"
-            android:layout_marginEnd="8dp" />
+            android:text="Buy"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/sellButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="Sell"
             android:background="@color/red"
-            android:textColor="@color/white"
-            android:layout_marginStart="8dp" />
+            android:text="Sell"
+            android:textColor="@color/white" />
     </LinearLayout>
-</LinearLayout>
+    <TextView
+        android:id="@+id/faqHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Frequently Asked Questions"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsLinearLayout"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/faq1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/_1_how_do_i_buy_cryptocurrency"
+        android:textColor="@color/red"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/faqHeader" />
+
+    <TextView
+        android:id="@+id/answ1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="@string/choose_coin_enter_amount_click_buy_or_sell_button"
+        android:textColor="@color/green"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/faq1" />
+
+
+    <TextView
+        android:id="@+id/faq2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/_2_how_can_i_see_my_coins"
+        android:textColor="@color/red"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answ1" />
+    <TextView
+        android:id="@+id/answ2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="@string/you_can_see_the_wallet_by_clicking_on_home_from_navigation"
+        android:textColor="@color/green"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/faq2" />
+    <TextView
+        android:id="@+id/faq3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/_3_where_can_i_see_the_transactions_i_have_made"
+        android:textColor="@color/red"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answ2" />
+    <TextView
+        android:id="@+id/answ3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="-> You can see your transaction history by clicking on the profile from the navigation."
+        android:textColor="@color/green"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/faq3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

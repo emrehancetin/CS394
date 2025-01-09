@@ -17,6 +17,9 @@ import com.emrehancetin.cs394.databinding.FragmentProfileBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProfileFragment : Fragment() {
     private var _binding:FragmentProfileBinding? = null
@@ -56,8 +59,14 @@ class ProfileFragment : Fragment() {
             adapter.updateOrders(updatedHistory)
         }
 
+        val username = auth.currentUser?.email.toString().substringBefore("@")
+        binding.textViewPhoto.setText("- "+username + " - ")
 
-        binding.textViewPhoto.setText(auth.currentUser?.email.toString())
+
+        val creationTimestamp = auth.currentUser?.metadata?.creationTimestamp
+        val date = creationTimestamp?.let { Date(it) }
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        binding.accountCreationDateTextView.setText(date?.let { dateFormat.format(it) })
         val signOutButton = binding.signOutButton
         signOutButton.setOnClickListener { signOut(it) }
     }
