@@ -8,12 +8,12 @@ The application consists of 3 main tabs. These are Home (current account status 
 It is recommended that you download the main branch as a zip file from the current github link provided to you (https://github.com/emrehancetin/CS394) and open it in Android Studio. After your Build and Gradle operations, you can run the MainActivity class and launch the App on the emulator.
 
 ### ~ Emrehan ÇETİN
-General structure, development environment arrangement and navigation process 
+General structure, development environment arrangement and navigation process. Authentication and firestore operations and their usage in the application. 
 
 ### ~ Mustafa Berkay ERDURAN
-General application design 
+General application design . GUI development and bug fixing.
 
 ### ~ Emre Can KARATAŞ
-General data operations, model and adapter process 
+General data operations, model and adapter process. Get data from API. 
 
 
