@@ -112,7 +112,7 @@ class ExchangeFragment : Fragment() {
             return
         }
 
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
         appViewModel.updateWallet(crypto.code, amount, total, orderType,auth.currentUser)
         appViewModel.addOrder(OrderHistoryModel(UUID.randomUUID().toString(), date, crypto.code, crypto.value ,amount, orderType))
