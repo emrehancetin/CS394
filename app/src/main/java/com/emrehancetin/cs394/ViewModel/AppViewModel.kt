@@ -48,7 +48,7 @@ class AppViewModel : ViewModel() {
     private val repository = CryptoRepository(NetworkModule.coinGeckoService)
 
     init {
-        fetchWalletFromFirestore()
+        //fetchWalletFromFirestore()
         fetchHistoryFromFirestore()
         startRefreshingCryptoData()
         loadOwnedCryptos()
@@ -65,6 +65,7 @@ class AppViewModel : ViewModel() {
             }
     }
     public fun fetchHistoryFromFirestore(){
+        orderHistory.value?.clear()
         _orderHistory.value?.clear()
         val userEmail = auth.currentUser?.email.toString()
         db.collection("Transactions").whereEqualTo("email",userEmail).orderBy("date", Query.Direction.DESCENDING).addSnapshotListener{ value, _->
@@ -85,8 +86,6 @@ class AppViewModel : ViewModel() {
                         type = orderType
                     )
                     _orderHistory.value?.add(oldOrder)
-
-
                 }
 
             }
@@ -109,7 +108,7 @@ class AppViewModel : ViewModel() {
         }
     }
 
-    private fun loadOwnedCryptos() {
+    public fun loadOwnedCryptos() {
         // Simulate owned cryptocurrencies for demonstration
         val userEmail = auth.currentUser?.email.toString()
         db.collection("OwnedCrypto").whereEqualTo("email",userEmail).get().addOnSuccessListener {documents ->
@@ -149,7 +148,9 @@ class AppViewModel : ViewModel() {
     // Add a new order to the history
     fun addOrder(order: OrderHistoryModel) {
         val userEmail = auth.currentUser?.email.toString()
+        _orderHistory.value?.reverse()
         _orderHistory.value?.add(order)
+        _orderHistory.value?.reverse()
         _orderHistory.value = _orderHistory.value // Trigger LiveData update
 
         //db process

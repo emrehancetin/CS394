@@ -67,6 +67,8 @@ class HomeFragment : Fragment() {
 
         // To get wallet from firestore
         appViewModel.fetchWalletFromFirestore()
+        appViewModel.fetchHistoryFromFirestore()
+        appViewModel.loadOwnedCryptos()
 
 
         // Setup Owned Cryptos RecyclerView
